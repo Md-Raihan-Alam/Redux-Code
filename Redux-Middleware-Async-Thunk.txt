@@ -1,0 +1,39 @@
+import {applyMiddleware} from "redux";
+import logger from 'redux-logger';
+//middleware
+const myLogger=(store)=>{
+    return (next)=>{
+        return (action)=>{
+            console.log("middleware ran");
+            return next(action);//pass our action to next middleware/reducer
+        }
+    }
+}
+// shortHand Method middleware->error
+//const myLogger=store->next->action->{
+//  console.log("middleware ran");
+//  return next(action);
+//}
+const secondMiddleware=store=>next=>action=>{
+  console.log("second middleware ran");
+  return next(action);
+}
+const capAtTen=(store)=>(next)=>(action)=>{
+    if(store.getState()>=10){
+        return next({type:"DECREMENT"})
+    }
+    next(action);
+}
+const store=Redux.createStore(counterReducer,applyMiddleware(myLogger,secondMiddleware,capAtTen,logger/*,secondMiddle,thirdMiddle,...NMiddleware/*));
+const counterReducer(state=0,action)=>{
+    console.log("year our reducer run");
+    console.log("out action type is"+action.type);
+    switch(action.type){
+        case 'INCREMENT':
+            return state+1;
+        case 'DECREMENT:
+            return state-1;
+        default:
+            return state;
+    }
+}
